@@ -1,0 +1,86 @@
+name: Build Final Flutter App
+
+on: workflow_dispatch
+
+jobs:
+  build_android:
+    name: Build APK
+    runs-on: ubuntu-latest
+    env:
+      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+      KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+      KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17' 
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.2'
+      - uses: actions/checkout@v2
+      - run: flutter pub get
+      - run: |
+
+
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.KEYSTORE }}" | base64 --decode > android/app/keystore.jks
+
+      - name: Build APK
+        run: |
+          flutter build apk --release
+        env:
+          KEYSTORE_FILE: keystore.jks
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+      - name: Verify APK signature (jarsigner)
+        run: |
+          jarsigner -verify -verbose -certs build/app/outputs/flutter-apk/app-release.apk
+      - name: List APK Directory
+        run: ls -alh ${{ github.workspace }}/build/app/outputs/flutter-apk
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: apk
+          path: ${{ github.workspace }}/build/app/outputs/flutter-apk/app-release.apk
+
+
+
+  upload-release:
+    permissions: write-all
+    needs: [build_android,]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Read version from pubspec.yaml
+        id: version
+        run: |
+          VERSION=$(grep 'version:' pubspec.yaml | sed 's/version: //')
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Download APK
+        uses: actions/download-artifact@v4
+        with:
+          name: apk
+          path: ./out/android
+
+
+      - name: List output directory
+        run: ls -R ./out
+
+      - name: Upload Release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        with:
+          files: |
+            ./out/android/*
+          tag_name: ${{ steps.version.outputs.VERSION }}
+          draft: false
+          prerelease: false
