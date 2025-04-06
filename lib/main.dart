@@ -36,7 +36,6 @@ class MainApp extends StatelessWidget {
           primary: Colors.white,
         ),
         useMaterial3: true,
-        fontFamily: 'Scratchy',
       ),
     );
   }

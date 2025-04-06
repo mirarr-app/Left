@@ -64,10 +64,12 @@ class _HomePageState extends State<HomePage>
           .toList(),
     ];
 
-    return Scaffold(
-      body: PageView(
-        controller: _pageController,
-        children: pages,
+    return SafeArea(
+      child: Scaffold(
+        body: PageView(
+          controller: _pageController,
+          children: pages,
+        ),
       ),
     );
   }
@@ -85,7 +87,6 @@ class _HomePageState extends State<HomePage>
           days: isLeapYear(now.year) ? 366 : 365,
           startDay: daysPassed,
         ),
-        const SizedBox(height: 120),
         Padding(
           padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
           child: Row(
@@ -124,7 +125,6 @@ class _HomePageState extends State<HomePage>
           days: daysInMonth,
           startDay: dayOfMonth,
         ),
-        const SizedBox(height: 120),
         Padding(
           padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
           child: Row(
@@ -173,7 +173,6 @@ class _HomePageState extends State<HomePage>
           days: 365,
           startDay: 365 - daysUntilBirthday,
         ),
-        const SizedBox(height: 120),
         Padding(
           padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
           child: Row(
@@ -221,7 +220,6 @@ class _HomePageState extends State<HomePage>
           days: 365,
           startDay: 365 - daysUntil,
         ),
-        const SizedBox(height: 120),
         Padding(
           padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
           child: Row(
@@ -263,7 +261,6 @@ class _HomePageState extends State<HomePage>
           isYearView: false,
           isMonthView: true,
         ),
-        const SizedBox(height: 120),
         Padding(
           padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
           child: Row(
@@ -301,7 +298,6 @@ class _HomePageState extends State<HomePage>
           startDay: age,
           isYearView: true,
         ),
-        const SizedBox(height: 120),
         Padding(
           padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
           child: Row(

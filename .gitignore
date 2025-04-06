@@ -1,3 +1,7 @@
+.env
+.vscode/
+android/app/.cxx/
+.fvmrc
 # Miscellaneous
 *.class
 *.log
@@ -41,3 +45,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# FVM Version Cache
+.fvm/
